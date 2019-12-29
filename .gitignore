@@ -1,7 +1,12 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+# Python virtual env
+env/
 *.py[cod]
 *$py.class
+
+# Database files
+*.db
 
 # C extensions
 *.so
@@ -26,6 +31,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+node_modules/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
