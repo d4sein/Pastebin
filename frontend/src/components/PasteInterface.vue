@@ -1,24 +1,65 @@
 <template>
   <div id="paste-interface">
     <div id="paste-grid-container">
-      <form id="paste-form" action="paste" method="POST">
-        <input id="paste-form-title" name="title" type="text" placeholder="Title">
-        <textarea id="paste-form-text" name="paste"
-        spellcheck="false" cols="30" rows="15" placeholder="Paste"></textarea>
+      <form v-on:submit="this.getPasteForm" id="paste-form">
+        <input
+          v-model="title"
+          id="paste-form-title"
+          name="title"
+          type="text"
+          placeholder="Title"
+        >
+        <textarea
+          v-model="paste"
+          id="paste-form-text"
+          name="paste"
+          spellcheck="false"
+          cols="30" rows="15"
+          placeholder="Paste">
+        </textarea>
         <div id="paste-form-btn">
-          <button type="submit">Paste!</button>
+          <button type="button" @click="this.getPasteForm">Paste!</button>
         </div>
       </form>
     </div>
+    {{ info }}
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import '../assets/static/axios_config'
 
 export default Vue.extend({
   name: 'paste-interface',
   components: {
+  },
+  methods: {
+    getPasteForm: function (): void {
+      this.axios
+        .post('paste/', {
+          title: 'meu titulo',
+          paste: this.paste
+        })
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
+  },
+  data () {
+    return {
+      info: null,
+      title: '',
+      paste: ''
+    }
+  },
+  mounted () {
+    this.axios
+      .get('paste/')
+      .then(response => (this.info = response.data))
   }
 })
 </script>

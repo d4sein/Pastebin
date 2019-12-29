@@ -1,5 +1,5 @@
 from app import app
-from app.user import user_bp, user_api
+from app.user.user_blueprint import user_bp, user_api
 from app.user.controllers.user_controller import User
 
 
