@@ -1,2 +1,7 @@
-from app.user.models import user_models
-from app.user.controllers import user_routes
+from flask import Blueprint
+from flask_restful import Api
+
+user_bp = Blueprint('user_bp', __name__, url_prefix='/user')
+user_api = Api(user_bp)
+
+from app.user import controllers, models
