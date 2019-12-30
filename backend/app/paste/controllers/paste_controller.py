@@ -1,20 +1,37 @@
-from flask_restful import Resource
-from flask import request
+import random
+from string import ascii_letters
 
-from app import app
+from flask import request
+from flask_restful import Resource
+
+from app import app, db
+from app.paste.models.paste_model import Paste as PasteDatabase
+from app.user.models.user_model import User as UserDatabase, UserSchema
 
 
 class Paste(Resource):
     def get(self):
-        return {'hello': 'world'}
+        return 200
 
     def post(self):
-        app.logger.info(request.data)
-        return {'post': 'ok'}
+        # user_schema = UserSchema()
+        # result = user_schema.load(request.data)
+        # app.logger.info(result)
+
+        return 200
 
     def put(self):
-        app.logger.info(request.data)
-        return {'put': 'ok'}
+        while True:
+            address = ''.join(random.choice(ascii_letters) for i in range(8))
+            db_address = PasteDatabase.query.filter_by(address=address).first()
 
-    def delete(self):
-        return {'delete': 'ok'}
+            if address != db_address:
+                break
+
+        user = UserDatabase.query.filter_by(username='d4sein').first()
+        paste = PasteDatabase(address=address, user_id=user.id)
+
+        db.session.add(paste)
+        db.session.commit()
+
+        return 200
