@@ -1,9 +1,19 @@
 <template>
   <div id="login-interface">
     <div id="login-grid-container">
-      <form id="login-form" action="login" method="POST">
-        <input id="login-form-username" name="username" type="text" placeholder="Username">
-        <input id="login-form-password" name="password" type="text" placeholder="Password">
+      <form id="login-form">
+        <input
+          id="login-form-username"
+          name="username"
+          type="text"
+          placeholder="Username"
+        >
+        <input
+          id="login-form-password"
+          name="password"
+          type="text"
+          placeholder="Password"
+        >
         <button id="login-form-btn" type="submit">Login</button>
         <footer id="login-form-footer">
           <p>Doesn't have an account? <a href="#">Register</a>.</p>

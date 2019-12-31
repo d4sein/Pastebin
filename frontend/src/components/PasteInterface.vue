@@ -32,8 +32,6 @@ import '../assets/static/axios_config'
 
 export default Vue.extend({
   name: 'paste-interface',
-  components: {
-  },
   methods: {
     getPasteForm: function (): void {
       this.axios
@@ -51,15 +49,9 @@ export default Vue.extend({
   },
   data () {
     return {
-      info: null,
       title: '',
       paste: ''
     }
-  },
-  mounted () {
-    this.axios
-      .get('paste/')
-      .then(response => (this.info = response.data))
   }
 })
 </script>

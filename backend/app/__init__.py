@@ -12,6 +12,7 @@ app.config.from_object('config')
 
 # Enables CORS
 CORS(app)
+
 # Defines the database object
 db = SQLAlchemy(app)
 # Defines the ODM object

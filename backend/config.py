@@ -12,8 +12,12 @@ CSRF_ENABLED = True
 # Secret key for signing the data. 
 CSRF_SESSION_KEY = 'secret'
 
+SESSION_COOKIE_SECURE = True
+
 # Secret key for signing cookies
-SECRET_KEY = 'secret'
+# >>> import secrets
+# >>> secrets.token_urlsafe(16)
+SECRET_KEY = 'Drmhze6EPcv0fN_81Bj-nA'
 
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'data.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = True

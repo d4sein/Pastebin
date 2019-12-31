@@ -11,7 +11,7 @@ from app.user.models.user_model import User as UserDatabase, UserSchema
 
 class Paste(Resource):
     def get(self):
-        return 200
+        return {'paste': 'foi'}, 200
 
     def post(self):
         # user_schema = UserSchema()
