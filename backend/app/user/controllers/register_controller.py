@@ -1,17 +1,23 @@
 from flask import request, session
 from flask_restful import Resource
-import marshmallow
 
 from app import app, db
-from app.user.models.user_model import User as UserDatabase, UserSchema
+
+from app.user.models.user_model import User as UserDatabase
+from app.user.schemas.user_schema import UserSchema
 
 
 class Register(Resource):
-    def get(self):
-        return {}, 200
-
     def post(self):
-        '''Registers a new user'''
+        '''
+        Registers a new user
+        
+        Body model:
+            {
+                "username": `the user name`,
+                "password": `the user password`
+            }
+        '''
 
         if 'username' in session:
             return {'error': 'User already logged in'}, 409
@@ -20,7 +26,7 @@ class Register(Resource):
 
         try:
             user = user_schema.load(request.json)
-        except marshmallow.exceptions.ValidationError as e:
+        except ma.exceptions.ValidationError as e:
             return {'error': e.args}, 400
 
         user_db = UserDatabase.query.filter_by(username=user.username).first()
@@ -35,6 +41,3 @@ class Register(Resource):
         session.update(user_session)
 
         return {'log': 'User has been registered'}, 201
-
-    def delete(self):
-        return {}, 202

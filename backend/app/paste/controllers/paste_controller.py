@@ -1,12 +1,16 @@
 import random
 from string import ascii_letters
 
-from flask import request
+from flask import request, session
 from flask_restful import Resource
 
 from app import app, db
+
 from app.paste.models.paste_model import Paste as PasteDatabase
-from app.user.models.user_model import User as UserDatabase, UserSchema
+from app.paste.schemas.paste_schema import PasteSchema
+
+from app.user.models.user_model import User as UserDatabase
+from app.user.schemas.user_schema import UserSchema
 
 
 class Paste(Resource):
@@ -14,24 +18,28 @@ class Paste(Resource):
         return {'paste': 'foi'}, 200
 
     def post(self):
-        # user_schema = UserSchema()
-        # result = user_schema.load(request.data)
-        # app.logger.info(result)
-
-        return 200
-
-    def put(self):
         while True:
             address = ''.join(random.choice(ascii_letters) for i in range(8))
             db_address = PasteDatabase.query.filter_by(address=address).first()
 
+            # If paste address is unique
             if address != db_address:
                 break
 
-        user = UserDatabase.query.filter_by(username='d4sein').first()
-        paste = PasteDatabase(address=address, user_id=user.id)
+        paste_data = request.json
+        # Updates paste with unique address
+        paste_data.update({'address': address})
+
+        if session:
+            user = UserDatabase.query.filter_by(username=session['username']).first()
+            paste_data.update({'user_id': user.id})
+
+        try:
+            paste = PasteSchema().load(paste_data)
+        except ma.exceptions.ValidationError as e:
+            return {'error': e.args}, 400
 
         db.session.add(paste)
         db.session.commit()
 
-        return 200
+        return {'log': 'Paste has been created'}, 201
