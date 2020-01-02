@@ -17,23 +17,26 @@ class User(Resource):
             username: str = `user name`
         '''
 
+        # Parsing args
         args = request.args.to_dict()
-        user_schema = UserSchema()
 
         # If length of args == 0 -> query for all users
         if len(args) == 0:
             users = UserDatabase.query.all()
-            serialized_users = [user_schema.dump(user) for user in users]
+            serialized_users = [UserSchema().dump(user) for user in users]
 
             return {'users': serialized_users}, 200
 
+        # If length of args == 1, then there must be only one keyword in `args`
+        # `next(iter(args))` gets the first iterable in args
+        # The keyword must be in tuple of possible keywords for query
         if len(args) == 1 and next(iter(args)) in ('id', 'username'):
             user = UserDatabase.query.filter_by(**args).first()
-            serialized_user = user_schema.dump(user)
 
-            if not len(serialized_user):
+            if not user:
                 return {'log': 'User not in database'}, 202
 
+            serialized_user = UserSchema().dump(user)
             return {'user': serialized_user}, 200
 
         return {'error': 'Wrong parameter'}, 400

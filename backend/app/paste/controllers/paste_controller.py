@@ -3,6 +3,7 @@ from string import ascii_letters
 
 from flask import request, session
 from flask_restful import Resource
+import marshmallow
 
 from app import app, db
 
@@ -15,10 +16,20 @@ from app.user.schemas.user_schema import UserSchema
 
 class Paste(Resource):
     def get(self):
-        return {'paste': 'foi'}, 200
+        return {}, 200
 
     def post(self):
+        '''
+        Creates a new paste
+
+        Body model:
+            {
+                "title": `Paste title`,
+                "content": `Paste content`
+            }
+        '''
         while True:
+            # Generates a random address
             address = ''.join(random.choice(ascii_letters) for i in range(8))
             db_address = PasteDatabase.query.filter_by(address=address).first()
 
@@ -27,18 +38,22 @@ class Paste(Resource):
                 break
 
         paste_data = request.json
-        # Updates paste with unique address
+        # Updates paste data with unique address
         paste_data.update({'address': address})
 
+        # If session exists, get user
         if session:
             user = UserDatabase.query.filter_by(username=session['username']).first()
+            # Updates paste data with user ID
             paste_data.update({'user_id': user.id})
 
+        # Tries to validate paste data
         try:
             paste = PasteSchema().load(paste_data)
-        except ma.exceptions.ValidationError as e:
+        except marshmallow.exceptions.ValidationError as e:
             return {'error': e.args}, 400
 
+        # Adds paste to database
         db.session.add(paste)
         db.session.commit()
 
