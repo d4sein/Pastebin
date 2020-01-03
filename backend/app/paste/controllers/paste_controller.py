@@ -16,7 +16,40 @@ from app.user.schemas.user_schema import UserSchema
 
 class Paste(Resource):
     def get(self):
-        return {}, 200
+        '''
+        Returns a query for user pastes
+
+        Parameters:
+            username: str = `User name`
+        '''
+        
+        args = request.args.to_dict()
+
+        if not args:
+            return {'error': 'Parameter is empty'}, 400
+        
+        if next(iter(args)) == 'username':
+            user = UserDatabase.query.filter_by(username=args['username']).first()
+
+            if not user:
+                return {'error': 'User not in database'}, 400
+
+            pastes = PasteDatabase.query.filter_by(user_id=user.id).all()
+            pastes_data = list()
+
+            for paste in pastes:
+                temp_data = {
+                    'address': paste.address,
+                    'title': paste.title,
+                    'created': paste.created.strftime('%m/%d/%Y-%H:%M:%S'),
+                    'last_edited': paste.last_edited.strftime('%m/%d/%Y-%H:%M:%S')
+                }
+
+                pastes_data.append(temp_data)
+            
+            return {'pastes': pastes_data}, 200
+        
+        return {'error': 'Wrong parameters'}, 400
 
     def post(self):
         '''

@@ -1,57 +1,58 @@
+from datetime import datetime, timedelta
+
 from flask import request, session
 from flask_restful import Resource
+from werkzeug.security import check_password_hash
 import marshmallow
+import jwt
 
-from app import app, db
-
+from app import app, db, functions
 from app.user.models.user_model import User as UserDatabase
 from app.user.schemas.user_schema import UserSchema
 
 
 class Session(Resource):
+    @functions.token_required
+    def get(current_user, self):
+        '''Gets current session'''
+        return {}, 200
+
     def post(self):
         '''
-        Stablishes a session for user
+        Creates an auth token for user
         
         Body model:
             {
-                "username": `the user name`,
-                "password": `the user password`
+                "username": `User name`,
+                "password": `User password`
             }
         '''
 
-        # If session exists, then a user is already logged in
-        if session:
-            return {'log': 'Session has been already stablished'}, 202
+        auth = request.authorization
 
-        # Tries to validate user data
-        try:
-            user = UserSchema().load(request.json)
-        except marshmallow.exceptions.ValidationError as e:
-            return {'error': e.args}, 400
+        if not auth or not auth.username or not auth.password:
+            return {'error': 'Failed to verify authentication'}, 401
 
-        # Verifies if user in database
-        user_db = UserDatabase.query.filter_by(username=user.username).first()
+        user = UserDatabase.query.filter_by(username=auth.username).first()
 
-        if not user_db:
-            return {'error': 'User not in database'}, 404
+        if not user:
+            return {'error': 'User not in database'}
 
-        if user.password != user_db.password:
-            return {'error': 'Wrong password'}, 401
+        if not check_password_hash(user.password, auth.password):
+            return {'error': 'Failed to authenticate user'}, 401
 
-        # Creates user session
-        user_session = {'username': user.username, 'password': user.password}
-        session.update(user_session)
+        # Creates the auth token
+        token = jwt.encode(
+            {
+                'public_id': user.public_id,
+                'exp': datetime.utcnow() + timedelta(minutes=30)
+            },
+            app.secret_key
+        )
+        
+        return {'token': token.decode('UTF-8')}, 200
 
-        return {'log': 'Session has been stablished'}, 200
 
     def delete(self):
         '''Clears user session'''
-
-        # If session, then user is logged in
-        if session:
-            # Clears the session
-            session.clear()
-            return {'log': 'Session has been cleared'}, 200
-        
-        return {'log': 'Session has been already cleared'}, 202
+        return {}, 200

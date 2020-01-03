@@ -1,28 +1,32 @@
 <template>
   <div id="paste-interface">
-    <div id="paste-grid-container">
-      <form v-on:submit="this.getPasteForm" id="paste-form">
+    <div id="paste-flex-container">
+      <form
+        id="paste-form"
+        @submit="sendForm"
+      >
+        <div class="input-error">{{ titleError }}</div>
         <input
-          v-model="title"
           id="paste-form-title"
+          v-model="title"
           name="title"
           type="text"
           placeholder="Title"
         >
+        <div class="input-error">{{ pasteError }}</div>
         <textarea
-          v-model="paste"
           id="paste-form-text"
+          v-model="paste"
           name="paste"
           spellcheck="false"
           cols="30" rows="15"
           placeholder="Paste">
         </textarea>
         <div id="paste-form-btn">
-          <button type="button" @click="this.getPasteForm">Paste!</button>
+          <button type="submit">Paste!</button>
         </div>
       </form>
     </div>
-    {{ info }}
   </div>
 </template>
 
@@ -33,24 +37,48 @@ import '../assets/static/axios_config'
 export default Vue.extend({
   name: 'paste-interface',
   methods: {
-    getPasteForm: function (): void {
+    sendForm: function (event: any): any {
+      // If any of the inputs is empty
+      if (!this.title || !this.paste) {
+        if (!this.title) {
+          this.titleError = 'Title cannot be empty'
+        } else {
+          this.titleError = ''
+        }
+
+        if (!this.paste) {
+          this.pasteError = 'Paste cannot be empty'
+        } else {
+          this.pasteError = ''
+        }
+
+        return event.preventDefault()
+      } else {
+        // Reset error messages
+        this.titleError = ''
+        this.pasteError = ''
+      }
+
+      let data = {
+        'title': this.title,
+        'content': this.paste
+      }
+
       this.axios
-        .post('paste/', {
-          title: 'meu titulo',
-          paste: this.paste
-        })
-        .then(response => {
-          console.log(response)
-        })
-        .catch(error => {
-          console.error(error)
-        })
+        .post('paste', data)
+        .then(response => (this.formResponse = response.data))
+        .catch(e => console.error(e))
+
+      return event.preventDefault()
     }
   },
   data () {
     return {
+      formResponse: Object,
       title: '',
-      paste: ''
+      titleError: '',
+      paste: '',
+      pasteError: ''
     }
   }
 })
@@ -59,41 +87,47 @@ export default Vue.extend({
 <style lang="less" scoped>
 @import '../assets/static/config';
 
-#paste-grid-container {
+#paste-flex-container {
   .window-container-style();
 
   width: 850px;
-  height: 400px;
   margin: auto;
   margin-top: 100px;
 }
 
 #paste-form {
   width: 100%;
-  height: 100%;
-  display: grid;
-  grid-gap: 5px;
-  grid-template-rows: 25px 1fr 45px;
+  display: flex;
+  flex-direction: column;
 }
 
 #paste-form-title {
   .text-input-style();
+
+  height: 25px;
+  margin: 5px 0;
 }
 
 #paste-form-text {
   .text-input-style();
+
+  height: 300px;
+  margin: 5px 0;
 }
 
 #paste-form-btn {
-  position: relative;
-
   button {
     .button-style();
 
-    bottom: 0;
-    position: absolute;
     width: 100%;
     height: 25px;
+    margin: 5px 0;
   }
+}
+
+.input-error {
+  font-style: italic;
+  font-size: 13px;
+  color: rgb(238, 26, 26);
 }
 </style>
