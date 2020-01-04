@@ -40,26 +40,8 @@ export default Vue.extend({
   name: 'login-interface',
   methods: {
     sendForm: function (event: any): any {
-      // If any of the inputs is empty
-      if (!this.username || !this.password) {
-        if (!this.username) {
-          this.usernameError = 'Username cannot be empty'
-        } else {
-          this.usernameError = ''
-        }
-
-        if (!this.password) {
-          this.passwordError = 'Password cannot be empty'
-        } else {
-          this.passwordError = ''
-        }
-
-        return event.preventDefault()
-      } else {
-        // Reset error messages
-        this.usernameError = ''
-        this.passwordError = ''
-      }
+      this.usernameError = this.username.length ? '' : 'Username cannot be empty'
+      this.passwordError = this.password.length ? '' : 'Password cannot be empty'
 
       let data: any = {
         username: this.username,
@@ -83,6 +65,11 @@ export default Vue.extend({
       passwordError: ''
     }
   }
+  // computed: {
+  //   usernameError (): string {
+  //     return this.username.length ? '' : 'Username cannot be empty'
+  //   }
+  // }
 })
 </script>
 

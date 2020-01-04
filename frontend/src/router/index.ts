@@ -10,6 +10,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/paste',
+    alias: '/',
     name: 'paste',
     component: Paste
   },

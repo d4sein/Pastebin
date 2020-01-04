@@ -1,12 +1,12 @@
 <template>
   <div id="main-header">
     <ul>
-      <li v-if="user.username">{{ user.username }}</li>
+      <li v-if="user.username"><router-link to="dashboard">{{ user.username }}</router-link></li>
       <li v-else>Anonymous</li>
       <li>|</li>
-      <li>Paste</li>
-      <li>Login</li>
-      <li>Register</li>
+      <li><router-link to="paste">Paste</router-link></li>
+      <li><router-link to="login">Login</router-link></li>
+      <li><router-link to="register">Register</router-link></li>
     </ul>
   </div>
 </template>
@@ -51,6 +51,14 @@ export default Vue.extend({
     li {
       padding: 0 8px;
       color: @dark-gray;
+
+      a {
+        color: @dark-gray;
+
+        &:hover {
+          color: @white;
+        }
+      }
     }
   }
 }
