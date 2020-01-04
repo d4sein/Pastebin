@@ -14,17 +14,22 @@
 <script lang="ts">
 import Vue from 'vue'
 import '../assets/static/axios_config'
+import store from '../assets/static/vuex_config'
 
 export default Vue.extend({
   name: 'main-header',
   data () {
     return {
-      user: Object
+      user: {}
     }
   },
   mounted () {
+    let token: any = {
+      'x-access-token': store.getters.token
+    }
+
     this.axios
-      .get('session')
+      .get('session', { headers: token })
       .then(response => (this.user = response.data))
       .catch(e => console.error(e))
   }

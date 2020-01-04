@@ -34,7 +34,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import '../assets/static/axios_config'
-import { Method } from 'axios'
+import store from '../assets/static/vuex_config'
 
 export default Vue.extend({
   name: 'login-interface',
@@ -61,22 +61,22 @@ export default Vue.extend({
         this.passwordError = ''
       }
 
-      let data = {
-        'username': this.username,
-        'password': this.password
+      let data: any = {
+        username: this.username,
+        password: this.password
       }
 
       this.axios
-        .post('session', data)
-        .then(response => (this.formResponse = response.data))
-        .catch(e => console.log(e))
+        .post('session', data, { auth: data })
+        .then(response => (store.commit('addToken', response.data.token)))
+        .catch(e => console.error(e))
 
+      // this.$router.push('/paste')
       return event.preventDefault()
     }
   },
   data () {
     return {
-      formResponse: Object,
       username: '',
       usernameError: '',
       password: '',

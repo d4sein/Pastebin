@@ -14,8 +14,9 @@ from app.user.schemas.user_schema import UserSchema
 class Session(Resource):
     @functions.token_required
     def get(current_user, self):
-        '''Gets current session'''
-        return {}, 200
+        '''Gets current user'''
+
+        return {'username': current_user.username}, 200
 
     def post(self):
         '''
