@@ -4,8 +4,9 @@
       <form
         id="register-form"
         method="POST"
-        @submit="sendForm"
+        @submit.prevent="sendForm"
       >
+        <div class="input-error">{{ registerError }}</div>
         <div class="input-error">{{ usernameError }}</div>
         <input
           id="register-form-username"
@@ -32,7 +33,7 @@
         >
         <button id="register-form-btn" type="submit">Register</button>
         <footer id="register-form-footer">
-          <p>Already has an account? <a href="#">Login</a>.</p>
+          <p>Already has an account? <router-link to="login">Login</router-link>.</p>
         </footer>
       </form>
     </div>
@@ -41,71 +42,58 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import store from '../assets/static/vuex_config'
 
 export default Vue.extend({
   name: 'register-interface',
   methods: {
-    sendForm: function (event: any): any {
-      // If any of the inputs is empty
-      if (!this.username || !this.password || !this.passwordConfirm) {
-        if (!this.username) {
-          this.usernameError = 'Username cannot be empty'
-        } else {
-          this.usernameError = ''
-        }
-
-        if (!this.password) {
-          this.passwordError = 'Password cannot be empty'
-        } else {
-          this.passwordError = ''
-        }
-
-        if (!this.passwordConfirm) {
-          this.passwordConfirmError = 'Confirm password cannot be empty'
-        } else {
-          this.passwordConfirmError = ''
-        }
-
-        return event.preventDefault()
-      } else {
-        // Reset error messages
-        this.usernameError = ''
-        this.passwordError = ''
-        this.passwordConfirmError = ''
-      }
+    sendForm: function (event: any): void {
+      this.usernameError = this.username.length ? '' : 'Username cannot be empty'
+      this.passwordError = this.password.length ? '' : 'Password cannot be empty'
+      this.passwordConfirmError = this.passwordConfirm.length ? '' : 'Confirm password cannot be empty'
 
       // This will be treated in the API but
       // for practicality sake it'll also be verified here
       // so it can easily update the error message
       if (this.password !== this.passwordConfirm) {
         this.passwordConfirmError = 'Confirm password doesn\'t match password'
-
-        return event.preventDefault()
       }
 
-      let data = {
+      let data: any = {
         'username': this.username,
         'password': this.password,
         'password-confirm': this.passwordConfirm
       }
 
       this.axios
-        .post('session', data)
-        .then(response => (this.formResponse = response.data))
-        .catch(e => console.log(e))
-
-      return event.preventDefault()
+        .post('register', data)
+        .then(response => {
+          if (response.status === 201) {
+            store.commit('addToken', response.data.token)
+            this.$router.push('paste')
+          }
+        })
+        .catch(e => {
+          if (e.status === 409) {
+            this.registerError = 'This username is already registered'
+          }
+        })
     }
   },
   data () {
     return {
-      formResponse: Object,
+      registerError: '',
       username: '',
       usernameError: '',
       password: '',
       passwordError: '',
       passwordConfirm: '',
       passwordConfirmError: ''
+    }
+  },
+  beforeCreate () {
+    if (store.getters.token !== null) {
+      this.$router.push('paste')
     }
   }
 })

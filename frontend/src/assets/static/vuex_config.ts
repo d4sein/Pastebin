@@ -17,6 +17,8 @@ const state: any = new Vuex.Store({
     addToken (state: any, token: any): void {
       if (typeof token === 'string') {
         state.token = token
+      } else {
+        state.token = null
       }
     }
   },

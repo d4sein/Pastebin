@@ -21,19 +21,36 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import store from '../assets/static/vuex_config'
 
 export default Vue.extend({
   name: 'dashboard-interface',
   data () {
     return {
-      pastes: Object
+      pastes: {}
+    }
+  },
+  beforeCreate () {
+    if (store.getters.token === null) {
+      this.$router.push('paste')
     }
   },
   mounted () {
+    let token: any = {
+      'x-access-token': store.getters.token
+    }
+
     this.axios
-      .get('paste?username=d4sein')
-      .then(response => (this.pastes = response.data))
-      .catch(e => console.error(e))
+      .get('session', { headers: token })
+      .then(response => {
+        let user = response.data
+
+        this.axios
+          .get(`paste?username=${user.username}`)
+          .then(response => (this.pastes = response.data))
+          .catch(e => console.error(e))
+      })
+      .catch(e => console.log(e))
   }
 })
 </script>
@@ -44,6 +61,18 @@ export default Vue.extend({
 #dashboard-pastes-labels {
   display: grid;
   grid-template-columns: 10fr 3fr 3fr 3fr 2fr;
+}
+
+#dashboard-pastes-empty {
+  width: 100%;
+  margin-top: 150px;
+
+  h3 {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 32px;
+    color: @dark-gray;
+  }
 }
 
 .dashboard-label {

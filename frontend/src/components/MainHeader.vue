@@ -1,8 +1,13 @@
 <template>
   <div id="main-header">
-    <ul>
-      <li v-if="user.username"><router-link to="dashboard">{{ user.username }}</router-link></li>
-      <li v-else>Anonymous</li>
+    <ul v-if="user.username">
+      <li><router-link to="dashboard">{{ user.username }}</router-link></li>
+      <li>|</li>
+      <li><router-link to="paste">Paste</router-link></li>
+      <li><router-link to="login">Logout</router-link></li>
+    </ul>
+    <ul v-else>
+      <li>Anonymous</li>
       <li>|</li>
       <li><router-link to="paste">Paste</router-link></li>
       <li><router-link to="login">Login</router-link></li>
@@ -31,7 +36,7 @@ export default Vue.extend({
     this.axios
       .get('session', { headers: token })
       .then(response => (this.user = response.data))
-      .catch(e => console.error(e))
+      .catch(e => console.log(e))
   }
 })
 </script>

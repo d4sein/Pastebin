@@ -10,7 +10,7 @@ from app.user.schemas.user_schema import UserSchema
 
 class User(Resource):
     @functions.token_required
-    def get(current_user, self):
+    def get(current_user: UserDatabase, self):
         '''
         Returns a query for user(s)
 
@@ -45,7 +45,7 @@ class User(Resource):
         return {'error': 'Wrong parameter'}, 400
 
     @functions.token_required
-    def put(current_user, self):
+    def put(current_user: UserDatabase, self):
         '''
         Updates `Admin` for user
 
@@ -59,7 +59,7 @@ class User(Resource):
         args = request.args.to_dict()
 
         # If args is empty or keyword in args != `username`
-        if not args or set(args) != set({'username'}):
+        if not args or set(args) != {'username'}:
             return {'error': 'Missing parameter `username`'}
     
         user = UserDatabase.query.filter_by(username=args['username']).first()
@@ -69,7 +69,7 @@ class User(Resource):
         return {'log': f'`Admin` for {user.username} has been updated'}, 200
 
     @functions.token_required
-    def delete(current_user, self):
+    def delete(current_user: UserDatabase, self):
         '''
         Deletes a user from database
 
@@ -83,7 +83,7 @@ class User(Resource):
         args = request.args.to_dict()
 
         # If args is empty or keyword in args != `username`
-        if not args or set(args) != set({'username'}):
+        if not args or set(args) != {'username'}:
             return {'error': 'Missing parameter `username`'}        
 
         user = UserDatabase.query.filter_by(username=args['username']).first()

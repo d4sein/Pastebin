@@ -13,6 +13,10 @@ from app.paste.schemas.paste_schema import PasteSchema
 from app.user.models.user_model import User as UserDatabase
 from app.user.schemas.user_schema import UserSchema
 
+# Needs to come later because it makes use
+# of PasteDatabase and PasteSchema
+from app import functions
+
 
 class Paste(Resource):
     def get(self):
@@ -28,7 +32,7 @@ class Paste(Resource):
         if not args:
             return {'error': 'Parameter is empty'}, 400
         
-        if next(iter(args)) == 'username':
+        if set(args) == {'username'}:
             user = UserDatabase.query.filter_by(username=args['username']).first()
 
             if not user:
@@ -72,13 +76,17 @@ class Paste(Resource):
 
         paste_data = request.json
         # Updates paste data with unique address
-        paste_data.update({'address': address})
+        paste_data.update(address=address)
 
-        # If session exists, get user
-        if session:
-            user = UserDatabase.query.filter_by(username=session['username']).first()
+        # Verifies if user is logged in
+        @functions.token_required
+        def getUser(current_user: UserDatabase):
+            return current_user
+
+        user = getUser()
+        if isinstance(user, UserDatabase):
             # Updates paste data with user ID
-            paste_data.update({'user_id': user.id})
+            paste_data.update(user_id=user.id)
 
         # Tries to validate paste data
         try:
@@ -90,4 +98,73 @@ class Paste(Resource):
         db.session.add(paste)
         db.session.commit()
 
-        return {'log': 'Paste has been created'}, 201
+        return {'address': paste.address}, 201
+
+    @functions.token_required
+    def put(current_user: UserDatabase, self):
+        '''
+        Updates a paste from registered user
+
+        Parameters:
+            address: str = `Paste address`
+
+        Body model:
+            {
+                "title": `Paste title`,
+                "content": `Paste content`
+            }
+        '''
+
+        args = request.args.to_dict()
+
+        if not set(args) == {'address'}:
+            return {'error': 'Missing parameter `address`'}, 400
+        
+        paste = PasteDatabase.query.filter_by(address=args['address']).first()
+
+        if not paste:
+            return {'error': 'Paste not in database'}, 404
+        
+        paste_data = request.json
+        paste_data.update(address=args['address'])
+        
+        # Tries to validate paste data
+        try:
+            valid_paste = PasteSchema().load(paste_data)
+        except marshmallow.exceptions.ValidationError as e:
+            return {'error': e.args}, 400
+
+        paste.title = valid_paste.title
+        paste.content = valid_paste.content
+
+        db.session.commit()
+
+        return {'log': 'Paste has been updated'}, 200
+
+    @functions.token_required
+    def delete(current_user: UserDatabase, self):
+        '''
+        Deletes a paste from database
+        
+        Parameters:
+            address: str = `Paste address`
+        '''
+
+        args = request.args.to_dict()
+
+        if not set(args) == {'address'}:
+            return {'error': 'Missing parameter `address`'}, 400
+        
+        paste = PasteDatabase.query.filter_by(address=args['address']).first()
+
+        if not paste:
+            return {'error': 'Paste not in database'}, 404
+        
+        # If user is either Admin or owns the paste
+        if current_user.admin or paste.user_id == current_user.id:
+            db.session.delete(paste)
+            db.session.commit()
+
+            return {'log': 'Paste has been deleted'}, 200
+
+        return {'error': 'User doesn\'t have permission to delete paste'}, 403

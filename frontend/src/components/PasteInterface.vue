@@ -3,7 +3,7 @@
     <div id="paste-flex-container">
       <form
         id="paste-form"
-        @submit="sendForm"
+        @submit.prevent="sendForm"
       >
         <div class="input-error">{{ titleError }}</div>
         <input
@@ -33,48 +33,36 @@
 <script lang="ts">
 import Vue from 'vue'
 import '../assets/static/axios_config'
+import store from '../assets/static/vuex_config'
 
 export default Vue.extend({
   name: 'paste-interface',
   methods: {
     sendForm: function (event: any): any {
-      // If any of the inputs is empty
-      if (!this.title || !this.paste) {
-        if (!this.title) {
-          this.titleError = 'Title cannot be empty'
-        } else {
-          this.titleError = ''
-        }
+      this.titleError = this.title.length ? '' : 'Title cannot be empty'
+      this.pasteError = this.paste.length ? '' : 'Paste cannot be empty'
 
-        if (!this.paste) {
-          this.pasteError = 'Paste cannot be empty'
-        } else {
-          this.pasteError = ''
-        }
-
-        return event.preventDefault()
-      } else {
-        // Reset error messages
-        this.titleError = ''
-        this.pasteError = ''
+      let data: any = {
+        title: this.title,
+        content: this.paste
       }
 
-      let data = {
-        'title': this.title,
-        'content': this.paste
+      let token: any = {
+        'x-access-token': store.getters.token
       }
 
       this.axios
-        .post('paste', data)
-        .then(response => (this.formResponse = response.data))
+        .post('paste', data, { headers: token })
+        .then(response => {
+          if (response.status === 201) {
+            this.$router.push(`paste/${response.data.address}`)
+          }
+        })
         .catch(e => console.error(e))
-
-      return event.preventDefault()
     }
   },
   data () {
     return {
-      formResponse: Object,
       title: '',
       titleError: '',
       paste: '',

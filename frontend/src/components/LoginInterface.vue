@@ -4,8 +4,9 @@
       <form
         id="login-form"
         method="POST"
-        @submit="sendForm"
+        @submit.prevent="sendForm"
       >
+        <div class="input-error">{{ loginError }}</div>
         <div class="input-error">{{ usernameError }}</div>
         <input
           id="login-form-username"
@@ -24,7 +25,7 @@
         >
         <button id="login-form-btn" type="submit">Login</button>
         <footer id="login-form-footer">
-          <p>Doesn't have an account? <a href="#">Register</a>.</p>
+          <p>Doesn't have an account? <router-link to="register">Register</router-link>.</p>
         </footer>
       </form>
     </div>
@@ -39,7 +40,7 @@ import store from '../assets/static/vuex_config'
 export default Vue.extend({
   name: 'login-interface',
   methods: {
-    sendForm: function (event: any): any {
+    sendForm: function (event: any): void {
       this.usernameError = this.username.length ? '' : 'Username cannot be empty'
       this.passwordError = this.password.length ? '' : 'Password cannot be empty'
 
@@ -50,26 +51,30 @@ export default Vue.extend({
 
       this.axios
         .post('session', data, { auth: data })
-        .then(response => (store.commit('addToken', response.data.token)))
-        .catch(e => console.error(e))
+        .then(response => {
+          store.commit('addToken', response.data.token)
 
-      // this.$router.push('/paste')
-      return event.preventDefault()
+          if (store.getters.token !== null) {
+            this.$router.push('paste')
+          }
+        })
+        .catch(e => {
+          this.loginError = 'Wrong User or Password'
+        })
     }
   },
   data () {
     return {
+      loginError: '',
       username: '',
       usernameError: '',
       password: '',
       passwordError: ''
     }
+  },
+  beforeCreate () {
+    store.commit('addToken', null)
   }
-  // computed: {
-  //   usernameError (): string {
-  //     return this.username.length ? '' : 'Username cannot be empty'
-  //   }
-  // }
 })
 </script>
 

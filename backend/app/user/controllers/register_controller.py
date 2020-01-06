@@ -1,9 +1,12 @@
+from datetime import datetime, timedelta
+
 from flask import request
 from flask_restful import Resource
 from werkzeug.security import generate_password_hash
 import uuid
 import sqlalchemy
 import marshmallow
+import jwt
 
 from app import app, db
 
@@ -38,10 +41,10 @@ class Register(Resource):
         
         # Generates public ID
         public_id = str(uuid.uuid4())
-        user_data.update({'public_id': public_id})
+        user_data.update(public_id=public_id)
         # Generates hashed password
         hashed_password = generate_password_hash(user_data['password'], method='sha256')
-        user_data.update({'password': hashed_password})
+        user_data.update(password=hashed_password)
 
         # Deletes password confirmation
         # It's not needed anymore
@@ -61,4 +64,13 @@ class Register(Resource):
         except sqlalchemy.exc.IntegrityError as e:
             return {'error': 'Username already in database'}, 409
 
-        return {'log': 'User has been registered'}, 201
+        # Creates the auth token
+        token = jwt.encode(
+            {
+                'public_id': user.public_id,
+                'exp': datetime.utcnow() + timedelta(minutes=60)
+            },
+            app.secret_key
+        )
+        
+        return {'token': token.decode('UTF-8')}, 201
