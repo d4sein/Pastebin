@@ -1,3 +1,4 @@
+from datetime import datetime
 import random
 from string import ascii_letters
 
@@ -135,7 +136,7 @@ class Paste(Resource):
             return {'error': 'Paste not in database'}, 404
         
         paste_data = request.json
-        paste_data.update(address=args['address'])
+        paste_data.update(address=args['address'], last_edited=str(datetime.now()))
         
         # Tries to validate paste data
         try:
@@ -145,6 +146,7 @@ class Paste(Resource):
 
         paste.title = valid_paste.title
         paste.content = valid_paste.content
+        paste.last_edited = valid_paste.last_edited
 
         db.session.commit()
 
