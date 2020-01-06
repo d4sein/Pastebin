@@ -13,10 +13,10 @@
           type="text"
           placeholder="Title"
         >
-        <div class="input-error">{{ pasteError }}</div>
+        <div class="input-error">{{ contentError }}</div>
         <textarea
           id="paste-form-text"
-          v-model="paste"
+          v-model="content"
           name="paste"
           spellcheck="false"
           cols="30" rows="15"
@@ -41,11 +41,11 @@ export default Vue.extend({
   methods: {
     sendForm: function (event: any): any {
       this.titleError = this.title.length ? '' : 'Title cannot be empty'
-      this.pasteError = this.paste.length ? '' : 'Paste cannot be empty'
+      this.contentError = this.content.length ? '' : 'Paste cannot be empty'
 
       let data: any = {
         title: this.title,
-        content: this.paste
+        content: this.content
       }
 
       let token: any = {
@@ -66,8 +66,8 @@ export default Vue.extend({
     return {
       title: '',
       titleError: '',
-      paste: '',
-      pasteError: ''
+      content: '',
+      contentError: ''
     }
   }
 })
@@ -115,8 +115,6 @@ export default Vue.extend({
 }
 
 .input-error {
-  font-style: italic;
-  font-size: 13px;
-  color: rgb(238, 26, 26);
+  .input-error-style();
 }
 </style>

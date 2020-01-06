@@ -153,8 +153,6 @@ export default Vue.extend({
 }
 
 .input-error {
-  font-style: italic;
-  font-size: 13px;
-  color: rgb(238, 26, 26);
+  .input-error-style();
 }
 </style>

@@ -137,7 +137,10 @@ class Paste(Resource):
         
         paste_data = request.json
         paste_data.update(address=args['address'], last_edited=str(datetime.now()))
-        
+
+        if not paste_data['title'] or not paste_data['content']:
+            return {'error': 'Inputs cannot be empty'}, 400
+
         # Tries to validate paste data
         try:
             valid_paste = PasteSchema().load(paste_data)

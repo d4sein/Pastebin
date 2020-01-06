@@ -2,7 +2,9 @@
   <div id="paste-edit-interface">
     <div id="paste-edit-flex-container">
       <form id="paste-edit-form" @submit.prevent="savePaste">
+        <div class="input-error">{{ titleError }}</div>
         <input id="paste-edit-form-title" v-model="paste.title">
+        <div class="input-error">{{ contentError }}</div>
         <textarea
           id="paste-edit-form-text"
           v-model="paste.content"
@@ -27,6 +29,9 @@ export default Vue.extend({
   name: 'paste-content-interface',
   methods: {
     savePaste: function () {
+      this.titleError = this.paste.title.length ? '' : 'Title cannot be empty'
+      this.contentError = this.paste.content.length ? '' : 'Paste cannot be empty'
+
       let token: any = {
         'x-access-token': store.getters.token
       }
@@ -41,8 +46,10 @@ export default Vue.extend({
   },
   data () {
     return {
-      paste: {},
-      address: ''
+      paste: { 'title': '', 'content': '' },
+      address: '',
+      titleError: '',
+      contentError: ''
     }
   },
   created () {
@@ -97,5 +104,9 @@ export default Vue.extend({
     height: 25px;
     margin: 5px 0;
   }
+}
+
+.input-error {
+  .input-error-style();
 }
 </style>
