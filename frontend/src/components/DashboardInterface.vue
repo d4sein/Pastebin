@@ -1,17 +1,17 @@
 <template>
   <div id="dashboard-interface">
     <div id="dashboard-grid-container">
-      <div id="dashboard-pastes-labels">
-        <div class="dashboard-label"><h3>Title</h3></div>
-        <div class="dashboard-label"><h3>Address</h3></div>
-        <div class="dashboard-label"><h3>Created</h3></div>
-        <div class="dashboard-label"><h3>Last Edited</h3></div>
+      <div id="dashboard-paste-labels">
+        <div><h3>Title</h3></div>
+        <div><h3>Address</h3></div>
+        <div><h3>Created</h3></div>
+        <div><h3>Last Edited</h3></div>
       </div>
       <div class="dashboard-paste-container" v-for="paste in pastes.pastes" :key="paste.address">
-        <div class="dashboard-paste-item"><h3>{{ paste.title }}</h3></div>
-        <div class="dashboard-paste-item"><h3>{{ paste.address }}</h3></div>
-        <div class="dashboard-paste-item"><h3>{{ paste.created }}</h3></div>
-        <div class="dashboard-paste-item"><h3>{{ paste.last_edited }}</h3></div>
+        <div><h3>{{ paste.title }}</h3></div>
+        <div><h3>{{ paste.address }}</h3></div>
+        <div><h3>{{ paste.created }}</h3></div>
+        <div><h3>{{ paste.last_edited }}</h3></div>
         <button @click="editPaste(paste)">Edit</button>
         <button @click="deletePaste(paste)">Delete</button>
       </div>
@@ -75,35 +75,23 @@ export default Vue.extend({
 <style lang="less" scoped>
 @import '../assets/static/config';
 
-#dashboard-pastes-labels {
+#dashboard-paste-labels {
   display: grid;
   grid-template-columns: 10fr 3fr 3fr 3fr 2fr;
-}
 
-#dashboard-pastes-empty {
-  width: 100%;
-  margin-top: 150px;
+  div {
+    margin-bottom: 30px;
+    width: 100%;
+    position: relative;
 
-  h3 {
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 32px;
-    color: @dark-gray;
-  }
-}
-
-.dashboard-label {
-  margin-bottom: 30px;
-  width: 100%;
-  position: relative;
-
-  h3 {
-    margin-left: 5px;
-    text-transform: uppercase;
-    color: @dark-gray;
-    font-size: 16px;
-    font-weight: 500;
-    position: absolute;
+    h3 {
+      margin-left: 5px;
+      text-transform: uppercase;
+      color: @dark-gray;
+      font-size: 16px;
+      font-weight: 500;
+      position: absolute;
+    }
   }
 }
 
@@ -125,6 +113,16 @@ export default Vue.extend({
     background: @light-blue;
   }
 
+  div {
+    padding: 5px;
+
+    h3 {
+      color: @dark-gray;
+      font-size: 14px;
+      font-weight: 300;
+    }
+  }
+
   button {
     margin-right: 5px;
     background: none;
@@ -136,15 +134,6 @@ export default Vue.extend({
     &:hover {
       color: @white;
     }
-  }
-}
-
-.dashboard-paste-item {
-  padding: 5px;
-  h3 {
-    color: @dark-gray;
-    font-size: 14px;
-    font-weight: 300;
   }
 }
 </style>
