@@ -7,13 +7,13 @@
         <div class="dashboard-label"><h3>Created</h3></div>
         <div class="dashboard-label"><h3>Last Edited</h3></div>
       </div>
-      <div class="dashboard-paste-container" v-for="paste in pastes.pastes" :key=paste.title>
+      <div class="dashboard-paste-container" v-for="paste in pastes.pastes" :key="paste.address">
         <div class="dashboard-paste-item"><h3>{{ paste.title }}</h3></div>
         <div class="dashboard-paste-item"><h3>{{ paste.address }}</h3></div>
         <div class="dashboard-paste-item"><h3>{{ paste.created }}</h3></div>
         <div class="dashboard-paste-item"><h3>{{ paste.last_edited }}</h3></div>
-        <button>Edit</button>
-        <button>Delete</button>
+        <button @click="editPaste(paste)">Edit</button>
+        <button @click="deletePaste(paste)">Delete</button>
       </div>
     </div>
   </div>
@@ -25,6 +25,23 @@ import store from '../assets/static/vuex_config'
 
 export default Vue.extend({
   name: 'dashboard-interface',
+  methods: {
+    editPaste: function (paste: any) {
+      this.$router.push(`edit/${paste.address}`)
+    },
+    deletePaste: function (paste: any) {
+      let token: any = {
+        'x-access-token': store.getters.token
+      }
+
+      this.axios
+        .delete(`paste?address=${paste.address}`, { headers: token })
+        .then(response => {
+          location.reload()
+        })
+        .catch(e => console.log(e))
+    }
+  },
   data () {
     return {
       pastes: {}
@@ -113,6 +130,7 @@ export default Vue.extend({
     background: none;
     border: none;
     font-size: 14px;
+    font-weight: 300;
     color: @dark-gray;
 
     &:hover {
@@ -125,8 +143,8 @@ export default Vue.extend({
   padding: 5px;
   h3 {
     color: @dark-gray;
-    font-size: 16px;
-    font-weight: 400;
+    font-size: 14px;
+    font-weight: 300;
   }
 }
 </style>

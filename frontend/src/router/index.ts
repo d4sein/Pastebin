@@ -5,6 +5,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import Dashboard from '../views/Dashboard.vue'
 import PasteContent from '../views/PasteContent.vue'
+import PasteEdit from '../views/PasteEdit.vue'
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,11 @@ const routes = [
     path: '/paste/:address',
     name: 'pasteContent',
     component: PasteContent
+  },
+  {
+    path: '/edit/:address',
+    name: 'pasteEdit',
+    component: PasteEdit
   },
   {
     path: '/login',

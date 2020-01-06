@@ -20,7 +20,8 @@
           name="paste"
           spellcheck="false"
           cols="30" rows="15"
-          placeholder="Paste">
+          placeholder="Paste"
+        >
         </textarea>
         <div id="paste-form-btn">
           <button type="submit">Paste!</button>

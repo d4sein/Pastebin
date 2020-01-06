@@ -1,17 +1,17 @@
 <template>
   <div id="main-header">
     <ul v-if="user.username">
-      <li><router-link to="dashboard">{{ user.username }}</router-link></li>
+      <li><router-link to="../dashboard">{{ user.username }}</router-link></li>
       <li>|</li>
-      <li><router-link to="paste">Paste</router-link></li>
-      <li><router-link to="login">Logout</router-link></li>
+      <li><router-link to="../paste">Paste</router-link></li>
+      <li><router-link to="../login">Logout</router-link></li>
     </ul>
     <ul v-else>
       <li>Anonymous</li>
       <li>|</li>
-      <li><router-link to="paste">Paste</router-link></li>
-      <li><router-link to="login">Login</router-link></li>
-      <li><router-link to="register">Register</router-link></li>
+      <li><router-link to="../paste">Paste</router-link></li>
+      <li><router-link to="../login">Login</router-link></li>
+      <li><router-link to="../register">Register</router-link></li>
     </ul>
   </div>
 </template>

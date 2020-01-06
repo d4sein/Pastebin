@@ -21,10 +21,11 @@ from app import functions
 class Paste(Resource):
     def get(self):
         '''
-        Returns a query for user pastes
+        Returns a query for user paste(s)
 
         Parameters:
-            username: str = `User name`
+            username: str = `User name`,
+            address: str = `Paste address`
         '''
         
         args = request.args.to_dict()
@@ -32,6 +33,14 @@ class Paste(Resource):
         if not args:
             return {'error': 'Parameter is empty'}, 400
         
+        if set(args) == {'address'}:
+            paste = PasteDatabase.query.filter_by(address=args['address']).first()
+        
+            if not paste:
+                return {'error': 'Paste not in database'}, 400
+            
+            return {'title': paste.title, 'content': paste.content}, 200
+
         if set(args) == {'username'}:
             user = UserDatabase.query.filter_by(username=args['username']).first()
 
