@@ -20,7 +20,8 @@ from app import functions
 
 
 class Paste(Resource):
-    def get(self):
+    @functions.token_required
+    def get(current_user: UserDatabase, self):
         '''
         Returns a query for user paste(s)
 
@@ -33,7 +34,7 @@ class Paste(Resource):
 
         if not args:
             return {'error': 'Parameter is empty'}, 400
-        
+
         if set(args) == {'address'}:
             paste = PasteDatabase.query.filter_by(address=args['address']).first()
         
@@ -47,6 +48,9 @@ class Paste(Resource):
 
             if not user:
                 return {'error': 'User not in database'}, 400
+
+            if not user.id == current_user.id or not current_user.admin:
+                return {'error': 'User cannot access pastes from other users'}, 403
 
             pastes = PasteDatabase.query.filter_by(user_id=user.id).all()
             pastes_data = list()
@@ -135,6 +139,9 @@ class Paste(Resource):
         if not paste:
             return {'error': 'Paste not in database'}, 404
         
+        if not paste.user_id == current_user.id or not current_user.admin:
+            return {'error': 'User cannot update pastes from other users'}, 403
+
         paste_data = request.json
         paste_data.update(address=args['address'], last_edited=str(datetime.now()))
 
