@@ -77,7 +77,7 @@ export default Vue.extend({
 
 #dashboard-paste-labels {
   display: grid;
-  grid-template-columns: 10fr 3fr 3fr 3fr 2fr;
+  grid-template-columns: 10fr repeat(3, 4fr) repeat(2, 1fr);
 
   div {
     margin-bottom: 30px;
