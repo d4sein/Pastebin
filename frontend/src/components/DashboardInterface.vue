@@ -101,14 +101,12 @@ export default Vue.extend({
   margin-top: 100px;
   display: grid;
   grid-template-columns: 1fr;
-
-  div {
-    display: grid;
-    grid-template-columns: 10fr 4fr 4fr 4fr 1fr 1fr;
-  }
 }
 
 .dashboard-paste-container {
+  display: grid;
+  grid-template-columns: 10fr repeat(3, 4fr) repeat(2, 1fr);
+
   &:nth-child(2n) {
     background: @light-blue;
   }
