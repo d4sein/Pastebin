@@ -49,8 +49,9 @@ class Paste(Resource):
             if not user:
                 return {'error': 'User not in database'}, 400
 
-            if not user.id == current_user.id or not current_user.admin:
-                return {'error': 'User cannot access pastes from other users'}, 403
+            if not user.id == current_user.id:
+                if not current_user.admin:
+                    return {'error': 'User cannot access pastes from other users'}, 403
 
             pastes = PasteDatabase.query.filter_by(user_id=user.id).all()
             pastes_data = list()
@@ -139,8 +140,9 @@ class Paste(Resource):
         if not paste:
             return {'error': 'Paste not in database'}, 404
         
-        if not paste.user_id == current_user.id or not current_user.admin:
-            return {'error': 'User cannot update pastes from other users'}, 403
+        if not paste.user_id == current_user.id:
+            if not current_user.admin:
+                return {'error': 'User cannot update pastes from other users'}, 403
 
         paste_data = request.json
         paste_data.update(address=args['address'], last_edited=str(datetime.now()))

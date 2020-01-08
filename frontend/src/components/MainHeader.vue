@@ -36,7 +36,7 @@ export default Vue.extend({
     this.axios
       .get('session', { headers: token })
       .then(response => (this.user = response.data))
-      .catch(e => console.log(e))
+      .catch(e => {})
   }
 })
 </script>

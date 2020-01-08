@@ -52,7 +52,7 @@ export default Vue.extend({
       this.$router.push('paste')
     }
   },
-  mounted () {
+  created () {
     let token: any = {
       'x-access-token': store.getters.token
     }
@@ -63,7 +63,7 @@ export default Vue.extend({
         let user = response.data
 
         this.axios
-          .get(`paste?username=${user.username}`)
+          .get(`paste?username=${user.username}`, { headers: token })
           .then(response => (this.pastes = response.data))
           .catch(e => console.error(e))
       })
