@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+    backend:
+        build: ./backend
+        networks:
+            nginx_network:
+                aliases: 
+                    - backend
+        volumes: 
+            - ./data:/app/data
+
+    nginx:
+        build: .
+        ports: 
+            # frontend
+            - 7000:80
+            # backend
+            - 5000:5000
+        depends_on: 
+            - backend
+        networks:
+            - nginx_network
+
+networks:
+  nginx_network:
+    driver: bridge
