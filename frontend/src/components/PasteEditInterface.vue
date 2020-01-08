@@ -55,8 +55,12 @@ export default Vue.extend({
   created () {
     this.address = this.$route.params.address
 
+    let token: any = {
+      'x-access-token': store.getters.token
+    }
+
     this.axios
-      .get(`paste?address=${this.address}`)
+      .get(`paste?address=${this.address}`, { headers: token })
       .then(response => {
         this.paste = response.data
       })
