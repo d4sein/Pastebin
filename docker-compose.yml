@@ -8,6 +8,8 @@ services:
             nginx_network:
                 aliases: 
                     - backend
+        volumes: 
+            - ./data:/app/data
 
     nginx:
         build: .

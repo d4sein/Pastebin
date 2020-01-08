@@ -1,8 +1,10 @@
 import os
 
-
 # Defines the application directory
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+DATABASE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
+
+if not os.path.exists(DATABASE_DIR):
+    os.mkdir(DATABASE_DIR)
 
 THREADS_PER_PAGE = 2
 
@@ -19,6 +21,6 @@ SESSION_COOKIE_SECURE = True
 # >>> secrets.token_urlsafe(16)
 SECRET_KEY = 'Drmhze6EPcv0fN_81Bj-nA'
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'data.db')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(DATABASE_DIR, 'data.db')
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 DATABASE_CONNECT_OPTIONS = {}
