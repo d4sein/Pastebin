@@ -3,7 +3,7 @@ cffi==1.13.2
 Click==7.0
 cryptography==2.8
 Flask==1.1.1
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 flask-marshmallow==0.10.1
 Flask-RESTful==0.3.7
 Flask-Session==0.3.1
